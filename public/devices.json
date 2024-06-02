@@ -1,0 +1,30 @@
+[
+	{
+		"id": 1,
+		"type": "sensor",
+		"name": "Motion Sensor",
+		"cost": 50,
+		"coverage_area": 20
+	},
+	{
+		"id": 2,
+		"type": "block",
+		"name": "Firewall",
+		"cost": 75,
+		"coverage_area": 50
+	},
+	{
+		"id": 3,
+		"type": "wire",
+		"name": "Small Wire",
+		"cost": 50,
+		"length": 100
+	},
+	{
+		"id": 4,
+		"type": "wire",
+		"name": "Long Wire",
+		"cost": 100,
+		"length": 200
+	}
+]
