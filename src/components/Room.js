@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import Label from "./Label";
 
 const RoomWrapper = styled.div`
 	position: relative;
@@ -12,11 +13,8 @@ const RoomWrapper = styled.div`
 
 const Wall = styled.div`
 	position: absolute;
-	background-color: #8b4513;
-	width: ${(props) =>
-		props.isHorizontal ? `${props.length}px` : `${props.thickness}px`};
-	height: ${(props) =>
-		props.isHorizontal ? `${props.thickness}px` : `${props.length}px`};
+	width: ${(props) => (props.isHorizontal ? `${props.length}px` : `20px`)};
+	height: ${(props) => (props.isHorizontal ? `20px` : `${props.length}px`)};
 	top: ${(props) =>
 		props.isHorizontal
 			? props.start[1]
@@ -25,6 +23,8 @@ const Wall = styled.div`
 		props.isHorizontal
 			? props.start[0] - props.thickness / 2
 			: props.start[0]}px;
+	transform: ${(props) =>
+		props.isHorizontal ? "translateY(-50%)" : "translateX(-50%)"};
 `;
 
 const Window = styled.div`
@@ -57,39 +57,105 @@ const Door = styled.div`
 			: props.position[0] - 5}px;
 `;
 
-const RoomComponent = ({ room }) => (
-	<RoomWrapper width={room.width} height={room.height} material={room.material}>
-		{room.walls.map((wall, index) => (
-			<Wall
-				key={index}
-				start={wall.start}
-				length={Math.sqrt(
+const Room = ({ room }) => {
+	const [hoveredElement, setHoveredElement] = useState(null);
+	const [visibleElement, setVisibleElement] = useState(null);
+	const [hideTimeout, setHideTimeout] = useState(null);
+
+	const handleMouseEnter = (index, type) => {
+		if (hideTimeout) {
+			clearTimeout(hideTimeout);
+			setHideTimeout(null);
+		}
+		setHoveredElement(`${type}-${index}`);
+		setVisibleElement(`${type}-${index}`);
+	};
+
+	const handleMouseLeave = () => {
+		const timeout = setTimeout(() => {
+			setVisibleElement(null);
+		}, 1000);
+		setHideTimeout(timeout);
+		setHoveredElement(null);
+	};
+
+	useEffect(() => {
+		return () => {
+			if (hideTimeout) {
+				clearTimeout(hideTimeout);
+			}
+		};
+	}, [hideTimeout]);
+
+	return (
+		<RoomWrapper
+			width={room.width}
+			height={room.height}
+			material={room.material}
+		>
+			{room.walls.map((wall, index) => {
+				const length = Math.sqrt(
 					Math.pow(wall.end[0] - wall.start[0], 2) +
 						Math.pow(wall.end[1] - wall.start[1], 2),
-				)}
-				thickness={wall.thickness}
-				isHorizontal={wall.orientation === "horizontal"}
-			/>
-		))}
-		{room.windows.map((window, index) => (
-			<div>
-				<Window
-					key={index}
-					position={window.position}
-					length={window.length}
-					orientation={window.orientation}
-				/>
-			</div>
-		))}
-		{room.doors.map((door, index) => (
-			<Door
-				key={index}
-				position={door.position}
-				length={door.length}
-				orientation={door.orientation}
-			/>
-		))}
-	</RoomWrapper>
-);
+				);
+				return (
+					<React.Fragment key={index}>
+						<Wall
+							start={wall.start}
+							length={length}
+							thickness={wall.thickness}
+							isHorizontal={wall.orientation === "horizontal"}
+							onMouseEnter={() => handleMouseEnter(index, "wall")}
+							onMouseLeave={handleMouseLeave}
+						/>
+						<Label
+							elem={wall}
+							size={Math.round(length)}
+							index={index}
+							hoveredElement={visibleElement}
+							type={"wall"}
+						/>
+					</React.Fragment>
+				);
+			})}
+			{room.windows.map((window, index) => (
+				<React.Fragment key={index}>
+					<Window
+						position={window.position}
+						length={window.length}
+						orientation={window.orientation}
+						onMouseEnter={() => handleMouseEnter(index, "window")}
+						onMouseLeave={handleMouseLeave}
+					/>
+					<Label
+						elem={window}
+						size={window.length}
+						index={index}
+						hoveredElement={visibleElement}
+						type={"window"}
+					/>
+				</React.Fragment>
+			))}
+			{room.doors.map((door, index) => (
+				<React.Fragment key={index}>
+					<Door
+						position={door.position}
+						length={door.length}
+						orientation={door.orientation}
+						onMouseEnter={() => handleMouseEnter(index, "door")}
+						onMouseLeave={handleMouseLeave}
+					/>
+					<Label
+						elem={door}
+						size={door.length}
+						index={index}
+						hoveredElement={visibleElement}
+						type={"door"}
+					/>
+				</React.Fragment>
+			))}
+		</RoomWrapper>
+	);
+};
 
-export default RoomComponent;
+export default Room;

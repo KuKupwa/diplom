@@ -8,7 +8,6 @@ const App = () => {
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<div>
-				<h1>Virtual Stand</h1>
 				<RoomGenerator />
 			</div>
 		</DndProvider>

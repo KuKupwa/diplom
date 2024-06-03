@@ -7,9 +7,19 @@ import RoomComponent from "./Room";
 
 const RoomContainer = styled.div`
 	display: flex;
-	flex-direction: column;
-	align-items: center;
+	flex-direction: row;
+	gap: 200px;
+	margin: 0 auto;
+	margin-top: 200px;
+	width: 100%;
 	justify-content: center;
+`;
+
+const Room = styled.div`
+	width: 1000px;
+	height: 600px;
+	justify-content: right;
+	display: flex;
 `;
 
 const Device = styled.div`
@@ -145,9 +155,6 @@ const generateRandomRoom = () => {
 		addWindowOrDoor(doors, false);
 	}
 
-	console.log("Generated Windows:", windows);
-	console.log("Generated Doors:", doors);
-
 	return { width, height, material, walls, windows, doors };
 };
 
@@ -191,37 +198,41 @@ const RoomGenerator = () => {
 	return (
 		<RoomContainer>
 			{room && (
-				<div ref={combineRefs}>
-					<RoomComponent room={room} />
-					{devices.map((device) => (
-						<React.Fragment key={device.id}>
-							<Device
-								type={device.type}
-								style={{ left: device.x - 25, top: device.y - 25 }}
-								showCoverage={showCoverage}
-								onMouseDown={(e) => e.stopPropagation()}
-							>
-								<DeleteButton onClick={() => removeDevice(device.id)}>
-									X
-								</DeleteButton>
-							</Device>
-							{showCoverage && (
-								<CoverageCircle
-									coverage_area={device.coverage_area}
-									top={device.y - device.coverage_area}
-									left={device.x - device.coverage_area}
-								/>
-							)}
-						</React.Fragment>
-					))}
-				</div>
+				<Room>
+					<div ref={combineRefs} style={{ width: "max-content" }}>
+						<RoomComponent room={room} />
+						{devices.map((device) => (
+							<React.Fragment key={device.id}>
+								<Device
+									type={device.type}
+									style={{ left: device.x - 25, top: device.y - 25 }}
+									showCoverage={showCoverage}
+									onMouseDown={(e) => e.stopPropagation()}
+								>
+									<DeleteButton onClick={() => removeDevice(device.id)}>
+										X
+									</DeleteButton>
+								</Device>
+								{showCoverage && (
+									<CoverageCircle
+										coverage_area={device.coverage_area}
+										top={device.y - device.coverage_area}
+										left={device.x - device.coverage_area}
+									/>
+								)}
+							</React.Fragment>
+						))}
+					</div>
+				</Room>
 			)}
-			<button onClick={() => setRoom(generateRandomRoom())}>
-				Generate New Room
-			</button>
-			<Devices addDevice={addDevice} moveDevice={moveDevice} />
-			<button onClick={toggleCoverage}>Toggle Coverage</button>
-			<div>Total Cost: ${cost}</div>
+			<div>
+				<button onClick={() => setRoom(generateRandomRoom())}>
+					Generate New Room
+				</button>
+				<Devices addDevice={addDevice} moveDevice={moveDevice} />
+				<button onClick={toggleCoverage}>Toggle Coverage</button>
+				<div>Total Cost: ${cost}</div>
+			</div>
 		</RoomContainer>
 	);
 };
