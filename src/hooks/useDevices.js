@@ -21,6 +21,10 @@ const useDevices = () => {
 		setDevices(devices.filter((device) => device.id !== id));
 	};
 
+	const clearDevices = () => {
+		setDevices([]);
+	};
+
 	const toggleCoverage = () => {
 		setShowCoverage(!showCoverage);
 	};
@@ -30,6 +34,7 @@ const useDevices = () => {
 		addDevice,
 		moveDevice,
 		removeDevice,
+		clearDevices,
 		showCoverage,
 		toggleCoverage,
 	};

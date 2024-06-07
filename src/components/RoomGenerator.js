@@ -4,6 +4,9 @@ import Devices from "./Devices";
 import { useDrop } from "react-dnd";
 import useDevices from "../hooks/useDevices";
 import RoomComponent from "./Room";
+import { useStore } from "../store/StoreProvider";
+import { useMaterialsGet } from "../hooks/useMaterialsGet";
+import OutputInfo from "./OutputInfo";
 
 const RoomContainer = styled.div`
 	display: flex;
@@ -11,8 +14,8 @@ const RoomContainer = styled.div`
 	gap: 200px;
 	margin: 0 auto;
 	margin-top: 200px;
-	width: 100%;
-	justify-content: center;
+	width: calc(100% - 200px);
+	justify-content: space-between;
 `;
 
 const Room = styled.div`
@@ -20,6 +23,14 @@ const Room = styled.div`
 	height: 600px;
 	justify-content: right;
 	display: flex;
+`;
+
+const RoomContent = styled.div`
+	width: max-content;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 `;
 
 const Device = styled.div`
@@ -68,6 +79,13 @@ const generatePositions = (length, wallLength) => {
 	return positions;
 };
 
+const lengthFromRoomSize = (st, en) => {
+	const length = Math.sqrt(
+		Math.pow(en[0] - st[0], 2) + Math.pow(en[1] - st[1], 2),
+	);
+	return (length / 100).toFixed(2);
+};
+
 const generateRandomRoom = () => {
 	const maxWidth = 800;
 	const maxHeight = 500;
@@ -75,11 +93,38 @@ const generateRandomRoom = () => {
 	const height = randomInt(300, maxHeight);
 	const material = Math.random() > 0.5 ? "wood" : "concrete";
 
+	const roomHeight = Number((randomInt(250, 350) / 100).toFixed(2));
+	const windowHeight = Number(
+		(roomHeight > 3 ? roomHeight - 2 : roomHeight - 1.5).toFixed(2),
+	);
+	const doorHeight = Number((roomHeight - 0.5).toFixed(2));
+
 	const walls = [
-		{ start: [0, 0], end: [width, 0], orientation: "horizontal" },
-		{ start: [width, 0], end: [width, height], orientation: "vertical" },
-		{ start: [width, height], end: [0, height], orientation: "horizontal" },
-		{ start: [0, height], end: [0, 0], orientation: "vertical" },
+		{
+			start: [0, 0],
+			end: [width, 0],
+			orientation: "horizontal",
+			length: lengthFromRoomSize([0, 0], [width, 0]),
+			height: "3",
+		},
+		{
+			start: [width, 0],
+			end: [width, height],
+			orientation: "vertical",
+			length: lengthFromRoomSize([width, 0], [width, height]),
+		},
+		{
+			start: [width, height],
+			end: [0, height],
+			orientation: "horizontal",
+			length: lengthFromRoomSize([width, height], [0, height]),
+		},
+		{
+			start: [0, height],
+			end: [0, 0],
+			orientation: "vertical",
+			length: lengthFromRoomSize([0, height], [0, 0]),
+		},
 	];
 
 	const windows = [];
@@ -109,7 +154,7 @@ const generateRandomRoom = () => {
 
 			if (positions.length === 0) {
 				if (isMandatory) {
-					attempts = 0; // Reset attempts to ensure mandatory addition
+					attempts = 0;
 				} else {
 					return;
 				}
@@ -132,7 +177,7 @@ const generateRandomRoom = () => {
 				array.push({
 					position:
 						orientation === "horizontal" ? [position, 0] : [0, position],
-					length,
+					length: (length / 100).toFixed(2),
 					orientation,
 				});
 				added = true;
@@ -155,7 +200,17 @@ const generateRandomRoom = () => {
 		addWindowOrDoor(doors, false);
 	}
 
-	return { width, height, material, walls, windows, doors };
+	return {
+		width,
+		height,
+		material,
+		walls,
+		windows,
+		doors,
+		roomHeight,
+		windowHeight,
+		doorHeight,
+	};
 };
 
 const calculateCost = (devices) => {
@@ -170,10 +225,37 @@ const RoomGenerator = () => {
 		addDevice,
 		moveDevice,
 		removeDevice,
+		clearDevices,
 		showCoverage,
 		toggleCoverage,
 	} = useDevices();
 	const [cost, setCost] = useState(0);
+
+	const { materialDataUpdate, roomDataUpdate, state } = useStore();
+
+	const {
+		getWallCharacteristick,
+		getDoorsCharacteristick,
+		getWindowsCharacteristick,
+	} = useMaterialsGet();
+
+	useEffect(() => {
+		const wallCharacteristickX = getWallCharacteristick();
+		const doorsCharacteristickX = getDoorsCharacteristick();
+		const windowsCharacteristickX = getWindowsCharacteristick();
+
+		materialDataUpdate({
+			wallCharacteristick: wallCharacteristickX,
+			doorsCharacteristick: doorsCharacteristickX,
+			windowsCharacteristick: windowsCharacteristickX,
+		});
+		roomDataUpdate(room);
+	}, [
+		room,
+		getWallCharacteristick,
+		getDoorsCharacteristick,
+		getWindowsCharacteristick,
+	]);
 
 	useEffect(() => {
 		setCost(calculateCost(devices));
@@ -183,9 +265,9 @@ const RoomGenerator = () => {
 		accept: "DEVICE",
 		drop: (item, monitor) => {
 			const delta = monitor.getClientOffset();
-			let x = delta.x;
-			let y = delta.y;
-
+			const offset = roomRef.current.getBoundingClientRect();
+			const x = delta.x - offset.left;
+			const y = delta.y - offset.top;
 			addDevice({ ...item.device, id: Date.now() }, x, y);
 		},
 	});
@@ -195,11 +277,17 @@ const RoomGenerator = () => {
 		drop(element);
 	};
 
+	const handleGenerateNewRoom = () => {
+		clearDevices();
+		setRoom(generateRandomRoom());
+	};
+
 	return (
 		<RoomContainer>
+			<OutputInfo />
 			{room && (
 				<Room>
-					<div ref={combineRefs} style={{ width: "max-content" }}>
+					<RoomContent ref={combineRefs}>
 						<RoomComponent room={room} />
 						{devices.map((device) => (
 							<React.Fragment key={device.id}>
@@ -222,13 +310,11 @@ const RoomGenerator = () => {
 								)}
 							</React.Fragment>
 						))}
-					</div>
+					</RoomContent>
 				</Room>
 			)}
 			<div>
-				<button onClick={() => setRoom(generateRandomRoom())}>
-					Generate New Room
-				</button>
+				<button onClick={handleGenerateNewRoom}>Generate New Room</button>
 				<Devices addDevice={addDevice} moveDevice={moveDevice} />
 				<button onClick={toggleCoverage}>Toggle Coverage</button>
 				<div>Total Cost: ${cost}</div>

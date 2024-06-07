@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import Label from "./Label";
+import { useStore } from "../store/StoreProvider";
 
 const RoomWrapper = styled.div`
 	position: relative;
@@ -13,8 +13,8 @@ const RoomWrapper = styled.div`
 
 const Wall = styled.div`
 	position: absolute;
-	width: ${(props) => (props.isHorizontal ? `${props.length}px` : `20px`)};
-	height: ${(props) => (props.isHorizontal ? `20px` : `${props.length}px`)};
+	width: ${(props) => (props.isHorizontal ? `${props.length}px` : `5px`)};
+	height: ${(props) => (props.isHorizontal ? `5px` : `${props.length}px`)};
 	top: ${(props) =>
 		props.isHorizontal
 			? props.start[1]
@@ -30,8 +30,9 @@ const Wall = styled.div`
 const Window = styled.div`
 	position: absolute;
 	background-color: #87cefa;
-	width: ${(props) => (props.orientation === "horizontal" ? "80px" : "10px")};
-	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "80px")};
+	z-indedx: 2;
+	width: ${(props) => (props.orientation === "horizontal" ? "100px" : "10px")};
+	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "100px")};
 	top: ${(props) =>
 		props.orientation === "horizontal"
 			? props.position[1] - 5
@@ -45,8 +46,9 @@ const Window = styled.div`
 const Door = styled.div`
 	position: absolute;
 	background-color: #ff6347;
-	width: ${(props) => (props.orientation === "horizontal" ? "50px" : "10px")};
-	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "50px")};
+	z-indedx: 2;
+	width: ${(props) => (props.orientation === "horizontal" ? "80px" : "10px")};
+	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "80px")};
 	top: ${(props) =>
 		props.orientation === "horizontal"
 			? props.position[1] - 5
@@ -58,34 +60,19 @@ const Door = styled.div`
 `;
 
 const Room = ({ room }) => {
-	const [hoveredElement, setHoveredElement] = useState(null);
-	const [visibleElement, setVisibleElement] = useState(null);
-	const [hideTimeout, setHideTimeout] = useState(null);
-
-	const handleMouseEnter = (index, type) => {
-		if (hideTimeout) {
-			clearTimeout(hideTimeout);
-			setHideTimeout(null);
-		}
-		setHoveredElement(`${type}-${index}`);
-		setVisibleElement(`${type}-${index}`);
-	};
-
-	const handleMouseLeave = () => {
-		const timeout = setTimeout(() => {
-			setVisibleElement(null);
-		}, 1000);
-		setHideTimeout(timeout);
-		setHoveredElement(null);
-	};
+	const { roomDataUpdate, hoveredElementDataUpdate } = useStore();
+	const roomRef = useRef(null);
 
 	useEffect(() => {
-		return () => {
-			if (hideTimeout) {
-				clearTimeout(hideTimeout);
-			}
-		};
-	}, [hideTimeout]);
+		if (roomRef.current !== room) {
+			roomRef.current = room;
+			roomDataUpdate(room);
+		}
+	}, [room, roomDataUpdate]);
+
+	const handleMouseEnter = (elem, text, type) => {
+		hoveredElementDataUpdate({ ...elem, text, type });
+	};
 
 	return (
 		<RoomWrapper
@@ -105,15 +92,13 @@ const Room = ({ room }) => {
 							length={length}
 							thickness={wall.thickness}
 							isHorizontal={wall.orientation === "horizontal"}
-							onMouseEnter={() => handleMouseEnter(index, "wall")}
-							onMouseLeave={handleMouseLeave}
-						/>
-						<Label
-							elem={wall}
-							size={Math.round(length)}
-							index={index}
-							hoveredElement={visibleElement}
-							type={"wall"}
+							onMouseEnter={() =>
+								handleMouseEnter(
+									{ ...wall, length, index },
+									"Информация о стене",
+									"wall",
+								)
+							}
 						/>
 					</React.Fragment>
 				);
@@ -124,15 +109,13 @@ const Room = ({ room }) => {
 						position={window.position}
 						length={window.length}
 						orientation={window.orientation}
-						onMouseEnter={() => handleMouseEnter(index, "window")}
-						onMouseLeave={handleMouseLeave}
-					/>
-					<Label
-						elem={window}
-						size={window.length}
-						index={index}
-						hoveredElement={visibleElement}
-						type={"window"}
+						onMouseEnter={() =>
+							handleMouseEnter(
+								{ ...window, index },
+								"Информация об окне",
+								"window",
+							)
+						}
 					/>
 				</React.Fragment>
 			))}
@@ -142,15 +125,9 @@ const Room = ({ room }) => {
 						position={door.position}
 						length={door.length}
 						orientation={door.orientation}
-						onMouseEnter={() => handleMouseEnter(index, "door")}
-						onMouseLeave={handleMouseLeave}
-					/>
-					<Label
-						elem={door}
-						size={door.length}
-						index={index}
-						hoveredElement={visibleElement}
-						type={"door"}
+						onMouseEnter={() =>
+							handleMouseEnter({ ...door, index }, "Информация о двери", "door")
+						}
 					/>
 				</React.Fragment>
 			))}

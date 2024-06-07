@@ -10,11 +10,17 @@ const LabelContainer = styled.div`
 	transform: translate(-50%, -50%);
 	z-index: 10;
 	width: 200px;
+	display: flex;
+	flex-direction: column;
 	visibility: ${(props) => (props.visible ? "visible" : "hidden")};
 `;
 
+const LabelElement = styled.div`
+	display: flex;
+	gap: 10px;
+`;
+
 const Label = ({ elem, size, index, hoveredElement, type }) => {
-	console.log(elem);
 	return (
 		<LabelContainer
 			style={
@@ -42,7 +48,7 @@ const Label = ({ elem, size, index, hoveredElement, type }) => {
 			}
 			visible={hoveredElement === `${type}-${index}`}
 		>
-			{size} px
+			{size} М<LabelElement></LabelElement>
 		</LabelContainer>
 	);
 };

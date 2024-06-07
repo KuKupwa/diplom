@@ -1,0 +1,119 @@
+[
+	{
+		"name": "walls",
+		"materials": [
+			{
+				"name": "Бетон",
+				"haracteristicks": [
+					{
+						"thickness": 0.15,
+						"r_w": 45
+					},
+					{
+						"thickness": 0.2,
+						"r_w": 50
+					},
+					{
+						"thickness": 0.25,
+						"r_w": 55
+					}
+				]
+			},
+			{
+				"name": "Кирпич",
+				"haracteristicks": [
+					{
+						"thickness": 0.1,
+						"r_w": 40
+					},
+					{
+						"thickness": 0.15,
+						"r_w": 45
+					},
+					{
+						"thickness": 0.2,
+						"r_w": 50
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "windows",
+		"materials": [
+			{
+				"name": "Одинарное",
+				"haracteristicks": [
+					{
+						"thickness": 0.004,
+						"r_w": 25
+					},
+					{
+						"thickness": 0.006,
+						"r_w": 30
+					},
+					{
+						"thickness": 0.008,
+						"r_w": 35
+					}
+				]
+			},
+			{
+				"name": "Двойное",
+				"haracteristicks": [
+					{
+						"thickness": 0.016,
+						"r_w": 30
+					},
+					{
+						"thickness": 0.024,
+						"r_w": 35
+					},
+					{
+						"thickness": 0.028,
+						"r_w": 38
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "doors",
+		"materials": [
+			{
+				"name": "Дерево",
+				"haracteristicks": [
+					{
+						"thickness": 0.03,
+						"r_w": 20
+					},
+					{
+						"thickness": 0.04,
+						"r_w": 25
+					},
+					{
+						"thickness": 0.08,
+						"r_w": 30
+					}
+				]
+			},
+			{
+				"name": "Металл",
+				"haracteristicks": [
+					{
+						"thickness": 0.04,
+						"r_w": 30
+					},
+					{
+						"thickness": 0.05,
+						"r_w": 35
+					},
+					{
+						"thickness": 0.06,
+						"r_w": 40
+					}
+				]
+			}
+		]
+	}
+]
