@@ -94,7 +94,7 @@ const Room = ({ room }) => {
 							isHorizontal={wall.orientation === "horizontal"}
 							onMouseEnter={() =>
 								handleMouseEnter(
-									{ ...wall, length, index },
+									{ ...wall, index },
 									"Информация о стене",
 									"wall",
 								)

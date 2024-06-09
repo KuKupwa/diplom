@@ -83,7 +83,7 @@ const lengthFromRoomSize = (st, en) => {
 	const length = Math.sqrt(
 		Math.pow(en[0] - st[0], 2) + Math.pow(en[1] - st[1], 2),
 	);
-	return (length / 100).toFixed(2);
+	return Number((length / 100).toFixed(2));
 };
 
 const generateRandomRoom = () => {
@@ -94,9 +94,14 @@ const generateRandomRoom = () => {
 	const material = Math.random() > 0.5 ? "wood" : "concrete";
 
 	const roomHeight = Number((randomInt(250, 350) / 100).toFixed(2));
+	const roomWidth = Number((width / 100).toFixed(2));
+	const roomLen = Number((height / 100).toFixed(2));
+	const s_room = Number((roomWidth * roomLen).toFixed(2));
+
 	const windowHeight = Number(
 		(roomHeight > 3 ? roomHeight - 2 : roomHeight - 1.5).toFixed(2),
 	);
+
 	const doorHeight = Number((roomHeight - 0.5).toFixed(2));
 
 	const walls = [
@@ -104,26 +109,33 @@ const generateRandomRoom = () => {
 			start: [0, 0],
 			end: [width, 0],
 			orientation: "horizontal",
-			length: lengthFromRoomSize([0, 0], [width, 0]),
-			height: "3",
+			length: roomWidth,
+			height: roomHeight,
+			s: Number(roomWidth * roomHeight).toFixed(2),
 		},
 		{
 			start: [width, 0],
 			end: [width, height],
 			orientation: "vertical",
-			length: lengthFromRoomSize([width, 0], [width, height]),
+			length: roomLen,
+			height: roomHeight,
+			s: Number(roomHeight * roomLen).toFixed(2),
 		},
 		{
 			start: [width, height],
 			end: [0, height],
 			orientation: "horizontal",
-			length: lengthFromRoomSize([width, height], [0, height]),
+			length: roomWidth,
+			height: roomHeight,
+			s: Number(roomWidth * roomHeight).toFixed(2),
 		},
 		{
 			start: [0, height],
 			end: [0, 0],
 			orientation: "vertical",
-			length: lengthFromRoomSize([0, height], [0, 0]),
+			length: roomLen,
+			height: roomHeight,
+			s: Number(roomLen * roomHeight).toFixed(2),
 		},
 	];
 
@@ -179,6 +191,11 @@ const generateRandomRoom = () => {
 						orientation === "horizontal" ? [position, 0] : [0, position],
 					length: (length / 100).toFixed(2),
 					orientation,
+					height: Number(length) < 100 ? windowHeight : doorHeight,
+					s:
+						Number(length) < 100
+							? (windowHeight * (length / 100)).toFixed(2)
+							: (doorHeight * (length / 100)).toFixed(2),
 				});
 				added = true;
 			}
@@ -207,9 +224,12 @@ const generateRandomRoom = () => {
 		walls,
 		windows,
 		doors,
-		roomHeight,
+		roomLen,
+		roomWidth,
 		windowHeight,
 		doorHeight,
+		roomHeight,
+		s_room,
 	};
 };
 
@@ -250,6 +270,7 @@ const RoomGenerator = () => {
 			windowsCharacteristick: windowsCharacteristickX,
 		});
 		roomDataUpdate(room);
+		console.log(state);
 	}, [
 		room,
 		getWallCharacteristick,

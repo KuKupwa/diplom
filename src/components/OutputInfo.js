@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { startTransition, useMemo } from "react";
 import styled from "styled-components";
 import { useStore } from "../store/StoreProvider";
 
@@ -29,7 +29,7 @@ const OutputInfo = () => {
 	}, [state]);
 
 	const heightRoomWall = useMemo(() => {
-		return state.roomData.roomHeight;
+		return state.roomData.roomLen;
 	}, [state]);
 
 	const characteristickElem = useMemo(() => {
@@ -53,9 +53,10 @@ const OutputInfo = () => {
 				<>
 					<OutputInfoElement>
 						<h3>Общая информация об комнате</h3>
-						<div>Ширина: {widthRoom} М</div>
-						<div>Длина: {heightRoom} М</div>
-						<div>Высота: {heightRoomWall} М</div>
+						<div>Ширина: {state.roomData.roomWidth} М</div>
+						<div>Длина: {state.roomData.roomLen} М</div>
+						<div>Высота: {state.roomData.roomHeight} М</div>
+						<div>Площадь: {state.roomData.s_room} М2</div>
 					</OutputInfoElement>
 					{elementData && (
 						<OutputInfoElement>
@@ -74,6 +75,9 @@ const OutputInfo = () => {
 								<div>
 									Коэф. звукоизол.: {characteristickElem.haracteristics.r_w}
 								</div>
+								<div>Высота: {elementData.height} М</div>
+								<div>Ширина: {elementData.length} М</div>
+								<div>Площадь: {elementData.s} М2</div>
 							</>
 						</OutputInfoElement>
 					)}
