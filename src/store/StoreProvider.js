@@ -12,6 +12,8 @@ export const StoreProvider = ({ children }) => {
 		roomData: {},
 		materialsData: {},
 		hoveredElementData: null,
+		securityInfo: {},
+		devices: {},
 	});
 
 	const roomDataUpdate = (roomInfo) => {
@@ -31,7 +33,21 @@ export const StoreProvider = ({ children }) => {
 	const hoveredElementDataUpdate = (hoveredElementData) => {
 		setState((prevState) => ({
 			...prevState,
-			hoveredElementData,
+			hoveredElementData: hoveredElementData,
+		}));
+	};
+
+	const securityDataUpdate = (securityData) => {
+		setState((prevState) => ({
+			...prevState,
+			securityData: securityData,
+		}));
+	};
+
+	const devicesDataUpdate = (devicesData) => {
+		setState((prevState) => ({
+			...prevState,
+			devices: devicesData,
 		}));
 	};
 
@@ -42,6 +58,8 @@ export const StoreProvider = ({ children }) => {
 				roomDataUpdate,
 				materialDataUpdate,
 				hoveredElementDataUpdate,
+				securityDataUpdate,
+				devicesDataUpdate,
 			}}
 		>
 			{children}

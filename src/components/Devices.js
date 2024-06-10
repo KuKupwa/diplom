@@ -9,8 +9,8 @@ const DeviceContainer = styled.div`
 `;
 
 const Device = styled.div`
-	width: 50px;
-	height: 50px;
+	width: 25px;
+	height: 25px;
 	background-color: ${(props) =>
 		props.type === "sensor"
 			? "#ff6347"
@@ -43,7 +43,6 @@ const DraggableDevice = ({ device }) => {
 
 const Devices = ({ addDevice }) => {
 	const [deviceData, setDeviceData] = useState([]);
-
 	useEffect(() => {
 		fetch("/devices.json")
 			.then((response) => response.json())

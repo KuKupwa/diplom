@@ -6,6 +6,10 @@ const OutputInfoContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 250px;
+	color: white;
+	padding: 15px;
+	border: 1px solid white;
+	border-radius: 8px;
 `;
 
 const OutputInfoElement = styled.div`
@@ -13,12 +17,26 @@ const OutputInfoElement = styled.div`
 	flex-direction: column;
 	justify-content: space-between;
 	width: 100%;
+	padding-bottom: 10px;
+
+	&:first-child {
+		padding-bottom: 20px;
+	}
+
+	&:not(:first-child) {
+		border-top: 2px white solid;
+	}
+
+	&:last-child {
+		padding-bottom: 0;
+	}
 `;
 
 const OutputInfo = () => {
 	const { state } = useStore();
 
 	const elementData = state.hoveredElementData || state.lastHoveredElementData;
+	console.log(elementData, "11111111111");
 
 	const widthRoom = useMemo(() => {
 		return (state.roomData.width / 100).toFixed(2);
@@ -57,6 +75,13 @@ const OutputInfo = () => {
 						<div>Длина: {state.roomData.roomLen} М</div>
 						<div>Высота: {state.roomData.roomHeight} М</div>
 						<div>Площадь: {state.roomData.s_room} М2</div>
+						<div>Макс. уровень шума: {state.roomData.insideNoise} Дб</div>
+					</OutputInfoElement>
+					<OutputInfoElement>
+						<h3>Информация об угрозе:</h3>
+						<div>
+							Мин. уровень шума для перехвата: {state.roomData.scammerNoise} Дб
+						</div>
 					</OutputInfoElement>
 					{elementData && (
 						<OutputInfoElement>

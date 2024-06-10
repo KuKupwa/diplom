@@ -7,15 +7,16 @@ import RoomComponent from "./Room";
 import { useStore } from "../store/StoreProvider";
 import { useMaterialsGet } from "../hooks/useMaterialsGet";
 import OutputInfo from "./OutputInfo";
+import useIntersectionCoverage from "../hooks/useCoverage";
+import useCoverage from "../hooks/useCoverage";
 
 const RoomContainer = styled.div`
 	display: flex;
 	flex-direction: row;
-	gap: 200px;
-	margin: 0 auto;
-	margin-top: 200px;
-	width: calc(100% - 200px);
+	gap: 100px;
+	width: 100%;
 	justify-content: space-between;
+	position: relative;
 `;
 
 const Room = styled.div`
@@ -35,8 +36,8 @@ const RoomContent = styled.div`
 
 const Device = styled.div`
 	position: absolute;
-	width: 50px;
-	height: 50px;
+	width: 25px;
+	height: 25px;
 	background-color: ${(props) =>
 		props.type === "sensor"
 			? "#ff6347"
@@ -44,7 +45,7 @@ const Device = styled.div`
 			? "#4682b4"
 			: "#8a2be2"};
 	cursor: pointer;
-	border: ${(props) => (props.showCoverage ? "2px solid yellow" : "none")};
+	z-index: 2;
 `;
 
 const DeleteButton = styled.button`
@@ -59,13 +60,13 @@ const DeleteButton = styled.button`
 
 const CoverageCircle = styled.div`
 	position: absolute;
-	width: ${(props) => props.coverage_area * 2}px;
-	height: ${(props) => props.coverage_area * 2}px;
-	border: 2px solid yellow;
-	border-radius: 50%;
+	width: ${(props) => props.coverage_area}px;
+	height: ${(props) => props.coverage_area}px;
+	background-color: #ff03;
 	pointer-events: none;
-	top: ${(props) => props.top}px;
-	left: ${(props) => props.left}px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 `;
 
 const randomInt = (min, max) =>
@@ -79,11 +80,23 @@ const generatePositions = (length, wallLength) => {
 	return positions;
 };
 
-const lengthFromRoomSize = (st, en) => {
-	const length = Math.sqrt(
-		Math.pow(en[0] - st[0], 2) + Math.pow(en[1] - st[1], 2),
-	);
-	return Number((length / 100).toFixed(2));
+const getBigSquareCoords = (x1, y1, side1, side2) => {
+	// Находим центр маленького квадрата
+	const centerX = x1 + side1 / 2;
+	const centerY = y1 + side1 / 2;
+
+	// Находим верхний левый угол большого квадрата
+	const bigX1 = centerX - side2 / 2;
+	const bigY1 = centerY - side2 / 2;
+
+	// Координаты всех углов большого квадрата
+	const topLeft = [bigX1, bigY1];
+	const topRight = [bigX1 + side2, bigY1];
+	const bottomLeft = [bigX1, bigY1 + side2];
+	const bottomRight = [bigX1 + side2, bigY1 + side2];
+
+	// Возвращаем координаты в формате x1y1 x2y2 x3y3 x4y4
+	return [...topLeft, ...topRight, ...bottomLeft, ...bottomRight];
 };
 
 const generateRandomRoom = () => {
@@ -98,6 +111,9 @@ const generateRandomRoom = () => {
 	const roomLen = Number((height / 100).toFixed(2));
 	const s_room = Number((roomWidth * roomLen).toFixed(2));
 
+	const insideNoise = randomInt(60, 100);
+	const scammerNoise = randomInt(20, 60);
+
 	const windowHeight = Number(
 		(roomHeight > 3 ? roomHeight - 2 : roomHeight - 1.5).toFixed(2),
 	);
@@ -109,38 +125,51 @@ const generateRandomRoom = () => {
 			start: [0, 0],
 			end: [width, 0],
 			orientation: "horizontal",
+			coord: [0, 0, width, 0, width, 5, 0, 5],
 			length: roomWidth,
 			height: roomHeight,
 			s: Number(roomWidth * roomHeight).toFixed(2),
+			windows: [],
+			doors: [],
+			name: "1",
 		},
 		{
 			start: [width, 0],
 			end: [width, height],
 			orientation: "vertical",
+			coord: [width, 0, width, height, width - 5, height, width - 5, 0],
 			length: roomLen,
 			height: roomHeight,
 			s: Number(roomHeight * roomLen).toFixed(2),
+			windows: [],
+			doors: [],
+			name: "2",
 		},
 		{
 			start: [width, height],
 			end: [0, height],
 			orientation: "horizontal",
+			coord: [width, height, 0, height, 0, height - 5, width, height - 5],
 			length: roomWidth,
 			height: roomHeight,
 			s: Number(roomWidth * roomHeight).toFixed(2),
+			windows: [],
+			doors: [],
+			name: "3",
 		},
 		{
 			start: [0, height],
 			end: [0, 0],
 			orientation: "vertical",
+			coord: [0, height, 0, 0, 5, 0, 5, height],
 			length: roomLen,
 			height: roomHeight,
 			s: Number(roomLen * roomHeight).toFixed(2),
+			windows: [],
+			doors: [],
+			name: "4",
 		},
 	];
-
-	const windows = [];
-	const doors = [];
 
 	const horizontalPositions = generatePositions(100, width);
 	const verticalPositions = generatePositions(100, height);
@@ -150,13 +179,15 @@ const generateRandomRoom = () => {
 
 	const addWindowOrDoor = (array, isWindow, isMandatory = false) => {
 		const length = isWindow ? 100 : 80;
-		let positions, orientation;
+		let positions, orientation, wallIndex;
 		let added = false;
 		let attempts = 0;
 		const maxAttempts = 100;
 
 		while (!added && attempts < maxAttempts) {
-			if (Math.random() > 0.5) {
+			wallIndex = randomInt(0, walls.length - 1);
+			const wall = walls[wallIndex];
+			if (wall.orientation === "horizontal") {
 				positions = horizontalPositions;
 				orientation = "horizontal";
 			} else {
@@ -186,17 +217,22 @@ const generateRandomRoom = () => {
 				});
 
 			if (validDistance(position, length, array)) {
-				array.push({
+				const newElement = {
 					position:
 						orientation === "horizontal" ? [position, 0] : [0, position],
-					length: (length / 100).toFixed(2),
+					length: Number((length / 100).toFixed(2)),
 					orientation,
 					height: Number(length) < 100 ? windowHeight : doorHeight,
 					s:
 						Number(length) < 100
 							? (windowHeight * (length / 100)).toFixed(2)
 							: (doorHeight * (length / 100)).toFixed(2),
-				});
+				};
+				if (isWindow) {
+					wall.windows.push(newElement);
+				} else {
+					wall.doors.push(newElement);
+				}
 				added = true;
 			}
 
@@ -205,16 +241,16 @@ const generateRandomRoom = () => {
 	};
 
 	// Ensure at least one window and one door
-	addWindowOrDoor(windows, true, true);
-	addWindowOrDoor(doors, false, true);
+	addWindowOrDoor(walls[0].windows, true, true);
+	addWindowOrDoor(walls[0].doors, false, true);
 
 	// Add additional windows and doors
 	for (let i = 1; i < numberOfWindows; i++) {
-		addWindowOrDoor(windows, true);
+		addWindowOrDoor(walls[randomInt(0, 3)].windows, true);
 	}
 
 	for (let i = 1; i < numberOfDoors; i++) {
-		addWindowOrDoor(doors, false);
+		addWindowOrDoor(walls[randomInt(0, 3)].doors, false);
 	}
 
 	return {
@@ -222,14 +258,14 @@ const generateRandomRoom = () => {
 		height,
 		material,
 		walls,
-		windows,
-		doors,
 		roomLen,
 		roomWidth,
 		windowHeight,
 		doorHeight,
 		roomHeight,
 		s_room,
+		insideNoise,
+		scammerNoise,
 	};
 };
 
@@ -251,13 +287,17 @@ const RoomGenerator = () => {
 	} = useDevices();
 	const [cost, setCost] = useState(0);
 
-	const { materialDataUpdate, roomDataUpdate, state } = useStore();
+	const { materialDataUpdate, roomDataUpdate, state, securityDataUpdate } =
+		useStore();
 
 	const {
 		getWallCharacteristick,
 		getDoorsCharacteristick,
 		getWindowsCharacteristick,
 	} = useMaterialsGet();
+
+	console.log(useCoverage(), "qwe");
+	console.log(state, "sss");
 
 	useEffect(() => {
 		const wallCharacteristickX = getWallCharacteristick();
@@ -268,9 +308,16 @@ const RoomGenerator = () => {
 			wallCharacteristick: wallCharacteristickX,
 			doorsCharacteristick: doorsCharacteristickX,
 			windowsCharacteristick: windowsCharacteristickX,
+			roomHeight: room.roomHeight,
+			roomWidth: room.roomWidth,
+			roomLen: room.roomLen,
 		});
 		roomDataUpdate(room);
-		console.log(state);
+		securityDataUpdate({
+			insideNoise: room.insideNoise,
+			scammerNoise: room.scammerNoise,
+		});
+		console.log("state", state);
 	}, [
 		room,
 		getWallCharacteristick,
@@ -289,7 +336,12 @@ const RoomGenerator = () => {
 			const offset = roomRef.current.getBoundingClientRect();
 			const x = delta.x - offset.left;
 			const y = delta.y - offset.top;
-			addDevice({ ...item.device, id: Date.now() }, x, y);
+
+			console.log(item.coverage_area, "(offset.left");
+			console.log(item, "(offset.left");
+
+			const coord = getBigSquareCoords(x, y, 25, item.device.coverage_area);
+			addDevice({ ...item.device, id: Date.now(), coord }, x, y);
 		},
 	});
 
@@ -321,14 +373,14 @@ const RoomGenerator = () => {
 									<DeleteButton onClick={() => removeDevice(device.id)}>
 										X
 									</DeleteButton>
+									{showCoverage && (
+										<CoverageCircle
+											coverage_area={device.coverage_area}
+											top={device.y - device.coverage_area}
+											left={device.x - device.coverage_area}
+										/>
+									)}
 								</Device>
-								{showCoverage && (
-									<CoverageCircle
-										coverage_area={device.coverage_area}
-										top={device.y - device.coverage_area}
-										left={device.x - device.coverage_area}
-									/>
-								)}
 							</React.Fragment>
 						))}
 					</RoomContent>
