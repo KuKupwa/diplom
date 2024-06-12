@@ -3,36 +3,36 @@
 		"name": "walls",
 		"materials": [
 			{
-				"name": "Бетон",
+				"name": "Гипсокартон",
 				"haracteristicks": [
 					{
+						"thickness": 0.1,
+						"r_w": 15
+					},
+					{
 						"thickness": 0.15,
-						"r_w": 45
+						"r_w": 17
 					},
 					{
 						"thickness": 0.2,
-						"r_w": 50
-					},
-					{
-						"thickness": 0.25,
-						"r_w": 55
+						"r_w": 18
 					}
 				]
 			},
 			{
-				"name": "Кирпич",
+				"name": "ДСП",
 				"haracteristicks": [
 					{
 						"thickness": 0.1,
-						"r_w": 40
+						"r_w": 12
 					},
 					{
 						"thickness": 0.15,
-						"r_w": 45
+						"r_w": 14
 					},
 					{
 						"thickness": 0.2,
-						"r_w": 50
+						"r_w": 16
 					}
 				]
 			}
@@ -42,36 +42,36 @@
 		"name": "windows",
 		"materials": [
 			{
-				"name": "Одинарное",
+				"name": "Одинарное стекло",
 				"haracteristicks": [
 					{
 						"thickness": 0.004,
-						"r_w": 25
+						"r_w": 10
 					},
 					{
 						"thickness": 0.006,
-						"r_w": 30
+						"r_w": 12
 					},
 					{
 						"thickness": 0.008,
-						"r_w": 35
+						"r_w": 14
 					}
 				]
 			},
 			{
-				"name": "Двойное",
+				"name": "Пластик",
 				"haracteristicks": [
 					{
-						"thickness": 0.016,
-						"r_w": 30
+						"thickness": 0.01,
+						"r_w": 15
 					},
 					{
-						"thickness": 0.024,
-						"r_w": 35
+						"thickness": 0.02,
+						"r_w": 17
 					},
 					{
-						"thickness": 0.028,
-						"r_w": 38
+						"thickness": 0.03,
+						"r_w": 18
 					}
 				]
 			}
@@ -81,36 +81,36 @@
 		"name": "doors",
 		"materials": [
 			{
-				"name": "Дерево",
+				"name": "Пластиковая",
 				"haracteristicks": [
 					{
 						"thickness": 0.03,
-						"r_w": 20
+						"r_w": 12
 					},
 					{
 						"thickness": 0.04,
-						"r_w": 25
+						"r_w": 14
 					},
 					{
-						"thickness": 0.08,
-						"r_w": 30
+						"thickness": 0.05,
+						"r_w": 16
 					}
 				]
 			},
 			{
-				"name": "Металл",
+				"name": "Алюминиевая",
 				"haracteristicks": [
 					{
 						"thickness": 0.04,
-						"r_w": 30
+						"r_w": 15
 					},
 					{
 						"thickness": 0.05,
-						"r_w": 35
+						"r_w": 17
 					},
 					{
 						"thickness": 0.06,
-						"r_w": 40
+						"r_w": 19
 					}
 				]
 			}

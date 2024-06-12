@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDrag } from "react-dnd";
+import { useStore } from "../store/StoreProvider";
+import useCoverage from "../hooks/useCoverage";
 
 const DeviceContainer = styled.div`
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+`;
+
+const DeviceWrapper = styled.div`
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	justify-content: left;
+	text-align: left;
+	white-space: nowrap;
+	width: 100%;
 	align-items: center;
 `;
 
@@ -31,18 +44,26 @@ const DraggableDevice = ({ device }) => {
 	});
 
 	return (
-		<Device
-			ref={drag}
-			type={device.type}
-			style={{ opacity: isDragging ? 0.5 : 1 }}
-		>
+		<DeviceWrapper>
+			<Device
+				ref={drag}
+				type={device.type}
+				style={{ opacity: isDragging ? 0.5 : 1 }}
+			></Device>
 			{device.name}
-		</Device>
+		</DeviceWrapper>
 	);
 };
 
 const Devices = ({ addDevice }) => {
+	const { wallsKoffSecurDeviceDataUpdate } = useStore();
+
 	const [deviceData, setDeviceData] = useState([]);
+
+	const res = useCoverage();
+
+	// wallsKoffSecurDeviceDataUpdate(res);
+
 	useEffect(() => {
 		fetch("/devices.json")
 			.then((response) => response.json())

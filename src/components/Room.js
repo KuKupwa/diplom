@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import { useStore } from "../store/StoreProvider";
+import useSecurityCoefficient from "../hooks/useControlSecurity";
 
 const RoomWrapper = styled.div`
 	position: relative;
 	width: ${(props) => props.width}px;
 	height: ${(props) => props.height}px;
-	background-color: ${(props) =>
-		props.material === "wood" ? "#deb887" : "#d3d3d3"};
-	border: 2px solid black;
+	background-color: #deb887;
+	border: 3px solid #8b4513;
 `;
 
 const Wall = styled.div`

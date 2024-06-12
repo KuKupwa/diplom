@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useStore } from "../store/StoreProvider";
 
 /**
@@ -6,7 +6,7 @@ import { useStore } from "../store/StoreProvider";
  * @returns {Array} - массив объектов с процентом покрытия и звукоизоляцией для каждой стены
  */
 const useCoverage = () => {
-	const { state } = useStore();
+	const { state, wallsKoffSecurDeviceDataUpdate } = useStore();
 
 	// Получаем координаты стен из store
 	const coordsWalls = useMemo(() => {
@@ -107,7 +107,7 @@ const useCoverage = () => {
 
 			return { wallCoords, coveragePercent, averageIsolation };
 		});
-	}, [coordsWalls, devices]);
+	}, [coordsWalls, devices, state.devices]);
 
 	return coverageData;
 };

@@ -2,33 +2,25 @@
 	{
 		"id": 1,
 		"type": "sensor",
-		"name": "Motion Sensor",
-		"cost": 50,
+		"name": "Соната-СМ1",
+		"cost": 1500,
 		"coverage_area": 200,
-		"k": 10
+		"k": 5
 	},
 	{
 		"id": 2,
 		"type": "block",
-		"name": "Firewall",
-		"cost": 75,
-		"coverage_area": 100,
-		"k": 10
+		"name": "Соната-Мини",
+		"cost": 2500,
+		"coverage_area": 150,
+		"k": 6
 	},
 	{
 		"id": 3,
 		"type": "wire",
-		"name": "Small Wire",
-		"cost": 50,
-		"length": 100,
-		"k": 10
-	},
-	{
-		"id": 4,
-		"type": "wire",
-		"name": "Long Wire",
-		"cost": 100,
-		"length": 200,
-		"k": 10
+		"name": "Соната-Микро",
+		"cost": 3200,
+		"coverage_area": 100,
+		"k": 7
 	}
 ]

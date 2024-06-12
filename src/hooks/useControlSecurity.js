@@ -1,82 +1,121 @@
-// import { useStore } from "@react-three/fiber";
-
-// const useControlSecurity = () => {
-// 	const { state } = useStore();
-
-// 	// Функция для вычисления площади элемента
-// 	const calculateArea = (length, height) => {
-// 		return length * height;
-// 	};
-
-// 	// Функция для вычисления суммарного индекса звукоизоляции с учетом защиты
-// 	const calculateTotalRw = (elements) => {
-// 		let totalArea = elements.reduce((total, el) => total + el.area, 0);
-
-// 		let sum = elements.reduce((total, el) => {
-// 			let rwWithProtection = el.rw + (el.protection || 0); // Учитываем защиту
-// 			return (
-// 				total + (el.area / totalArea) * Math.pow(10, -rwWithProtection / 10)
-// 			);
-// 		}, 0);
-
-// 		let R_total = -10 * Math.log10(sum);
-// 		return R_total;
-// 	};
-
-// 	// Функция для вычисления уровня звука за пределами помещения
-// 	const calculateExternalNoiseLevel = (internalNoiseLevel, R_total) => {
-// 		return internalNoiseLevel - R_total;
-// 	};
-
-// 	// Функция для оценки защищенности
-// 	const assessSecurity = (elements, internalNoiseLevel, threshold) => {
-// 		let R_total = calculateTotalRw(elements);
-
-// 		elements.forEach((el) => {
-// 			el.externalNoiseLevel = calculateExternalNoiseLevel(
-// 				internalNoiseLevel,
-// 				R_total,
-// 			);
-// 			el.isSecure = el.externalNoiseLevel < threshold;
-// 		});
-
-// 		return elements;
-// 	};
-
-// 	let internalNoiseLevel = 70; // Уровень шума внутри помещения (в дБ)
-// 	let threshold = 30; // Порог чувствительности перехватывающего устройства (в дБ)
-
-// 	let assessedElements = assessSecurity(
-// 		elements,
-// 		internalNoiseLevel,
-// 		threshold,
-// 	);
-
-// 	// Вывод результатов
-// 	assessedElements.forEach((el) => {
-// 		console.log(`Тип: ${el.type}`);
-// 		console.log(`Материал: ${el.material}`);
-// 		console.log(
-// 			`Длина: ${el.length} м, Высота: ${el.height} м, Толщина: ${el.thickness} м`,
-// 		);
-// 		console.log(`Площадь: ${el.area.toFixed(2)} м²`);
-// 		console.log(`Rw: ${el.rw} дБ`);
-// 		console.log(
-// 			`Уровень звука за пределами: ${el.externalNoiseLevel.toFixed(1)} дБ`,
-// 		);
-// 		console.log(
-// 			`Защищенность: ${
-// 				el.isSecure ? "Угроза отсутствует" : "Возможна утечка информации"
-// 			}`,
-// 		);
-// 		console.log("---");
-// 	});
-// };
-import React from "react";
+import { useMemo } from "react";
 import { useStore } from "../store/StoreProvider";
 
-export const useControlSecurity = () => {
+const useSecurityCoefficient = () => {
 	const { state } = useStore();
 
-	return {};
+	// Мемоизация данных о стенах для избежания лишних рендеров
+	const walls = useMemo(
+		() => state.roomData.walls || [],
+		[state.roomData.walls],
+	);
+
+	// Мемоизация данных о коэффициентах безопасности устройств
+	const wallsKoffSecurDevice = useMemo(
+		() => state.wallsKoffSecurDevice || [],
+		[state.wallsKoffSecurDevice],
+	);
+
+	// Мемоизация данных о материалах
+	const materialsData = useMemo(
+		() => state.materialsData || {},
+		[state.materialsData],
+	);
+
+	// Проверка наличия характеристик материалов
+	const windowRw = useMemo(() => {
+		return Number(
+			(materialsData?.windowsCharacteristick?.haracteristics?.r_w || 1).toFixed(
+				2,
+			),
+		);
+	}, [materialsData]);
+
+	const doorRw = useMemo(() => {
+		return Number(
+			(materialsData?.doorsCharacteristick?.haracteristics?.r_w || 1).toFixed(
+				2,
+			),
+		);
+	}, [materialsData]);
+
+	const wallRw = useMemo(() => {
+		return Number(
+			(materialsData?.wallCharacteristick?.haracteristics?.r_w || 1).toFixed(2),
+		);
+	}, [materialsData]);
+
+	console.log(windowRw, "windowRw");
+	console.log(doorRw, "doorRw");
+	console.log(wallRw, "wallRw");
+
+	/**
+	 * Расчет эффективной звукоизоляции для стены с учетом окон и дверей.
+	 * @param {Object} wall - Объект стены, содержащий окна и двери.
+	 * @returns {Number} - Эффективная звукоизоляция стены.
+	 */
+	const calculateEffectiveInsulation = (wall) => {
+		const wallArea = wall.s || 1; // Площадь стены (m²), защита от деления на 0
+		const totalWindowArea =
+			wall.windows?.reduce((acc, window) => acc + (window.s || 0), 0) || 0; // Общая площадь окон (m²)
+		const totalDoorArea =
+			wall.doors?.reduce((acc, door) => acc + (door.s || 0), 0) || 0; // Общая площадь дверей (m²)
+		const effectiveWallArea = (
+			wallArea -
+			totalWindowArea -
+			totalDoorArea
+		).toFixed(2); // Эффективная площадь стены без окон и дверей (m²)
+
+		// Расчет звукоизоляции окон
+		const windowInsulation =
+			wall.windows?.reduce((acc, window) => {
+				return acc + (window.s / wallArea) * windowRw;
+			}, 0) || 1;
+
+		// Расчет звукоизоляции дверей
+		const doorInsulation =
+			wall.doors?.reduce((acc, door) => {
+				return acc + (door.s / wallArea) * doorRw;
+			}, 0) || 1;
+
+		// Расчет звукоизоляции стены без учета окон и дверей
+		const wallInsulation = (effectiveWallArea / wallArea) * wallRw;
+
+		console.log(totalWindowArea, "aaa");
+
+		const a = wallInsulation + windowInsulation + doorInsulation;
+
+		return Number(a.toFixed(2));
+	};
+
+	/**
+	 * Расчет коэффициента защищенности.
+	 * @returns {Array} - Массив объектов с информацией о звукоизоляции стен.
+	 */
+	const calculateSecurityCoefficient = () => {
+		return walls.map((wall) => {
+			const wallInsulation = calculateEffectiveInsulation(wall); // Эффективная звукоизоляция стены
+			const requiredInsulation =
+				state.securityData.insideNoise - state.securityData.scammerNoise + 1; // Необходимая звукоизоляция (дБ)
+			const insulationPercentage = requiredInsulation
+				? (1 - wallInsulation / requiredInsulation) * 100
+				: 0; // Процент звукоизоляции относительно требуемой (%)
+
+			return {
+				wallName: wall.name,
+				insulationPercentage: insulationPercentage.toFixed(2), // %
+				securityCoefficient: wallInsulation.toFixed(2), // дБ
+			};
+		});
+	};
+
+	// Мемоизация данных о коэффициентах безопасности
+	const securityData = useMemo(
+		() => (materialsData ? calculateSecurityCoefficient() : null),
+		[walls, wallsKoffSecurDevice, materialsData, state.securityData],
+	);
+
+	return securityData;
 };
+
+export default useSecurityCoefficient;

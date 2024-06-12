@@ -14,6 +14,7 @@ export const StoreProvider = ({ children }) => {
 		hoveredElementData: null,
 		securityInfo: {},
 		devices: {},
+		wallsKoffSecurDevice: {},
 	});
 
 	const roomDataUpdate = (roomInfo) => {
@@ -51,6 +52,13 @@ export const StoreProvider = ({ children }) => {
 		}));
 	};
 
+	const wallsKoffSecurDeviceDataUpdate = (wallsKoffSecurDeviceData) => {
+		setState((prevState) => ({
+			...prevState,
+			wallsKoffSecurDevice: wallsKoffSecurDeviceData,
+		}));
+	};
+
 	return (
 		<StoreContext.Provider
 			value={{
@@ -60,6 +68,7 @@ export const StoreProvider = ({ children }) => {
 				hoveredElementDataUpdate,
 				securityDataUpdate,
 				devicesDataUpdate,
+				wallsKoffSecurDeviceDataUpdate,
 			}}
 		>
 			{children}
