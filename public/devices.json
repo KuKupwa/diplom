@@ -2,25 +2,25 @@
 	{
 		"id": 1,
 		"type": "sensor",
-		"name": "Соната-СМ1",
+		"name": "Тест 1",
 		"cost": 1500,
 		"coverage_area": 200,
-		"k": 5
+		"k": 10
 	},
 	{
 		"id": 2,
 		"type": "block",
-		"name": "Соната-Мини",
+		"name": "Тест 2",
 		"cost": 2500,
 		"coverage_area": 150,
-		"k": 6
+		"k": 20
 	},
 	{
 		"id": 3,
 		"type": "wire",
-		"name": "Соната-Микро",
+		"name": "Тест 3",
 		"cost": 3200,
 		"coverage_area": 100,
-		"k": 7
+		"k": 30
 	}
 ]

@@ -78,9 +78,10 @@ const useCoverage = () => {
 								coveredArea++;
 							}
 							if (!isolationGrid[key]) {
-								isolationGrid[key] = 1; // Начальное значение звукоизоляции 1
+								isolationGrid[key] = k; // Начальное значение звукоизоляции устройства
+							} else {
+								isolationGrid[key] = Math.max(isolationGrid[key], k); // Учитываем максимальный коэффициент звукоизоляции
 							}
-							isolationGrid[key] += k; // Учитываем коэффициент звукоизоляции устройства
 						}
 					}
 				}
@@ -97,7 +98,7 @@ const useCoverage = () => {
 					if (isolationGrid[key]) {
 						totalIsolation += isolationGrid[key];
 					} else {
-						totalIsolation += 1; // Ячейка не покрыта, звукоизоляция равна 1
+						totalIsolation += 2; // Ячейка не покрыта, звукоизоляция равна 1
 					}
 					count++;
 				}

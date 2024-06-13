@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Devices from "./Devices";
 import { useDrop } from "react-dnd";
 import useDevices from "../hooks/useDevices";
@@ -101,15 +101,61 @@ const DeleteButtonIcon = styled.div`
 	}
 `;
 
+const rippleEffect = keyframes`
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+`;
+
+const rippleEffect1 = keyframes`
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(5);
+    opacity: 0;
+  }
+`;
+
 const CoverageCircle = styled.div`
 	position: absolute;
-	width: ${(props) => props.coverage_area}px;
-	height: ${(props) => props.coverage_area}px;
-	background-color: #ff03;
+	width: 200px;
+	height: 200px;
 	pointer-events: none;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	transform-origin: center;
+	z-index: 10;
+	border-radius: 50%;
+`;
+
+const CoverageCircleСCh1 = styled.div`
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	top: 50px;
+	border: 1px white solid;
+	border-radius: 90px;
+	left: 50px;
+	animation: ${rippleEffect} 2s infinite;
+`;
+
+const CoverageCircleСCh2 = styled.div`
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 75px;
+	border: 1px white solid;
+	border-radius: 90px;
+	left: 75px;
+	animation: ${rippleEffect1} 2s infinite;
 `;
 
 const randomInt = (min, max) =>
@@ -148,19 +194,19 @@ const generateRandomRoom = () => {
 	const width = randomInt(300, maxWidth);
 	const height = randomInt(300, maxHeight);
 
-	const roomHeight = Number((randomInt(250, 350) / 100).toFixed(2));
-	const roomWidth = Number((width / 100).toFixed(2));
-	const roomLen = Number((height / 100).toFixed(2));
-	const s_room = Number((roomWidth * roomLen).toFixed(2));
+	const roomHeight = parseFloat((randomInt(250, 350) / 100).toFixed(2));
+	const roomWidth = parseFloat((width / 100).toFixed(2));
+	const roomLen = parseFloat((height / 100).toFixed(2));
+	const s_room = parseFloat((roomWidth * roomLen).toFixed(2));
 
 	const insideNoise = randomInt(80, 100);
 	const scammerNoise = 60;
 
-	const windowHeight = Number(
+	const windowHeight = parseFloat(
 		(roomHeight > 3 ? roomHeight - 2 : roomHeight - 1.5).toFixed(2),
 	);
 
-	const doorHeight = Number((roomHeight - 0.5).toFixed(2));
+	const doorHeight = parseFloat((roomHeight - 0.5).toFixed(2));
 
 	const walls = [
 		{
@@ -170,7 +216,7 @@ const generateRandomRoom = () => {
 			coord: [0, 0, width, 0, width, 5, 0, 5],
 			length: roomWidth,
 			height: roomHeight,
-			s: Number(roomWidth * roomHeight).toFixed(2),
+			s: parseFloat((roomWidth * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "1",
@@ -182,7 +228,7 @@ const generateRandomRoom = () => {
 			coord: [width, 0, width, height, width - 5, height, width - 5, 0],
 			length: roomLen,
 			height: roomHeight,
-			s: Number(roomHeight * roomLen).toFixed(2),
+			s: parseFloat((roomHeight * roomLen).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "2",
@@ -194,7 +240,7 @@ const generateRandomRoom = () => {
 			coord: [width, height, 0, height, 0, height - 5, width, height - 5],
 			length: roomWidth,
 			height: roomHeight,
-			s: Number(roomWidth * roomHeight).toFixed(2),
+			s: parseFloat((roomWidth * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "3",
@@ -206,7 +252,7 @@ const generateRandomRoom = () => {
 			coord: [0, height, 0, 0, 5, 0, 5, height],
 			length: roomLen,
 			height: roomHeight,
-			s: Number(roomLen * roomHeight).toFixed(2),
+			s: parseFloat((roomLen * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "4",
@@ -243,9 +289,9 @@ const generateRandomRoom = () => {
 
 		const newElement = {
 			position: orientation === "horizontal" ? [position, 0] : [0, position],
-			length: Number((length / 100).toFixed(2)),
+			length: parseFloat((length / 100).toFixed(2)),
 			orientation,
-			height: Number(length < 100 ? windowHeight : doorHeight),
+			height: parseFloat(length < 100 ? windowHeight : doorHeight),
 			s:
 				length < 100
 					? parseFloat((windowHeight * (length / 100)).toFixed(2))
@@ -321,8 +367,7 @@ const RoomGenerator = () => {
 
 	const res = useCoverage();
 
-	console.log(state, "state");
-
+	// Первоначальная загрузка данных материалов
 	useEffect(() => {
 		const wallCharacteristickX = getWallCharacteristick();
 		const doorsCharacteristickX = getDoorsCharacteristick();
@@ -332,26 +377,22 @@ const RoomGenerator = () => {
 			wallCharacteristick: wallCharacteristickX,
 			doorsCharacteristick: doorsCharacteristickX,
 			windowsCharacteristick: windowsCharacteristickX,
-			roomHeight: room.roomHeight,
-			roomWidth: room.roomWidth,
-			roomLen: room.roomLen,
 		});
+	}, [
+		getWallCharacteristick,
+		getDoorsCharacteristick,
+		getWindowsCharacteristick,
+	]);
+
+	// Обновление данных при генерации новой комнаты
+	useEffect(() => {
 		roomDataUpdate(room);
 		securityDataUpdate({
 			insideNoise: room.insideNoise,
 			scammerNoise: room.scammerNoise,
 		});
 		wallsKoffSecurDeviceDataUpdate(res);
-	}, [
-		room,
-		state.materialData,
-		getWallCharacteristick,
-		getDoorsCharacteristick,
-		getWindowsCharacteristick,
-		res,
-	]);
-
-	console.log(useSecurityCoefficient(), "useSecurityCoefficient");
+	}, [room, res]);
 
 	useEffect(() => {
 		setCost(calculateCost(devices));
@@ -415,7 +456,10 @@ const RoomGenerator = () => {
 											coverage_area={device.coverage_area}
 											top={device.y - device.coverage_area}
 											left={device.x - device.coverage_area}
-										/>
+										>
+											<CoverageCircleСCh1 />
+											<CoverageCircleСCh2 />
+										</CoverageCircle>
 									)}
 								</Device>
 							</React.Fragment>

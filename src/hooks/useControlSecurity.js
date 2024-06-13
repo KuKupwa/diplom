@@ -24,7 +24,7 @@ const useSecurityCoefficient = () => {
 
 	// Проверка наличия характеристик материалов
 	const windowRw = useMemo(() => {
-		return Number(
+		return parseFloat(
 			(materialsData?.windowsCharacteristick?.haracteristics?.r_w || 1).toFixed(
 				2,
 			),
@@ -32,7 +32,7 @@ const useSecurityCoefficient = () => {
 	}, [materialsData]);
 
 	const doorRw = useMemo(() => {
-		return Number(
+		return parseFloat(
 			(materialsData?.doorsCharacteristick?.haracteristics?.r_w || 1).toFixed(
 				2,
 			),
@@ -40,7 +40,7 @@ const useSecurityCoefficient = () => {
 	}, [materialsData]);
 
 	const wallRw = useMemo(() => {
-		return Number(
+		return parseFloat(
 			(materialsData?.wallCharacteristick?.haracteristics?.r_w || 1).toFixed(2),
 		);
 	}, [materialsData]);
@@ -52,7 +52,7 @@ const useSecurityCoefficient = () => {
 	/**
 	 * Расчет эффективной звукоизоляции для стены с учетом окон и дверей.
 	 * @param {Object} wall - Объект стены, содержащий окна и двери.
-	 * @returns {Number} - Эффективная звукоизоляция стены.
+	 * @returns {parseFloat} - Эффективная звукоизоляция стены.
 	 */
 	const calculateEffectiveInsulation = (wall) => {
 		const wallArea = wall.s || 1; // Площадь стены (m²), защита от деления на 0
@@ -85,13 +85,9 @@ const useSecurityCoefficient = () => {
 
 		const a = wallInsulation + windowInsulation + doorInsulation;
 
-		return Number(a.toFixed(2));
+		return parseFloat(a.toFixed(2));
 	};
 
-	/**
-	 * Расчет коэффициента защищенности.
-	 * @returns {Array} - Массив объектов с информацией о звукоизоляции стен.
-	 */
 	const calculateSecurityCoefficient = () => {
 		return walls.map((wall) => {
 			const wallInsulation = calculateEffectiveInsulation(wall); // Эффективная звукоизоляция стены
@@ -105,6 +101,7 @@ const useSecurityCoefficient = () => {
 				wallName: wall.name,
 				insulationPercentage: insulationPercentage.toFixed(2), // %
 				securityCoefficient: wallInsulation.toFixed(2), // дБ
+				percentProgress: wallInsulation,
 			};
 		});
 	};
