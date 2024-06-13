@@ -40,6 +40,10 @@ const RoomContainer = styled.div`
 	width: 100%;
 	justify-content: center;
 	align-items: center;
+
+	@media (min-width: 1921px) {
+		height: 1000px;
+	}
 `;
 
 const Room = styled.div`
