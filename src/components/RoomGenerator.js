@@ -189,8 +189,8 @@ const getBigSquareCoords = (x1, y1, side1, side2) => {
 };
 
 const generateRandomRoom = () => {
-	const maxWidth = 800;
-	const maxHeight = 500;
+	const maxWidth = 700;
+	const maxHeight = 450;
 	const width = randomInt(300, maxWidth);
 	const height = randomInt(300, maxHeight);
 
@@ -419,6 +419,15 @@ const RoomGenerator = () => {
 	const handleGenerateNewRoom = () => {
 		clearDevices();
 		setRoom(generateRandomRoom());
+		const wallCharacteristickX = getWallCharacteristick();
+		const doorsCharacteristickX = getDoorsCharacteristick();
+		const windowsCharacteristickX = getWindowsCharacteristick();
+
+		materialDataUpdate({
+			wallCharacteristick: wallCharacteristickX,
+			doorsCharacteristick: doorsCharacteristickX,
+			windowsCharacteristick: windowsCharacteristickX,
+		});
 	};
 
 	return (
@@ -473,7 +482,7 @@ const RoomGenerator = () => {
 				<Button onClick={toggleCoverage} isActive={showCoverage}>
 					Показ. обл. действия средств ТЗИ
 				</Button>
-				<div>Total Cost: ${cost}</div>
+				<div>Стоимость: {cost} Руб</div>
 			</Instruments>
 		</RoomContainer>
 	);

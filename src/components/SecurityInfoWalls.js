@@ -5,7 +5,7 @@ import useSecurityCoefficient from "../hooks/useControlSecurity";
 
 const SecurityInfoWallsWrapper = styled.div`
 	display: flex;
-	width: 400px;
+	width: 450px;
 	justify-content: space-between;
 `;
 
@@ -17,9 +17,10 @@ const SecurityInfoWallsWrapperEl = styled.div`
 
 const ProgressWrapper = styled.div`
 	display: flex;
-	width: 180px;
+	width: 200px;
 	justify-content: space-between;
 	align-items: center;
+	gap: 5px;
 `;
 
 const ProgressLine = styled.div`

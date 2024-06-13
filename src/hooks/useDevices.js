@@ -6,7 +6,7 @@ const useDevices = () => {
 	const [devices, setDevices] = useState([]);
 	const { devicesDataUpdate } = useStore();
 	console.log(devices);
-	const [showCoverage, setShowCoverage] = useState(false);
+	const [showCoverage, setShowCoverage] = useState(true);
 
 	const addDevice = (device, x, y) => {
 		const newDevice = { ...device, id: Date.now(), x, y };
