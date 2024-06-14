@@ -4,6 +4,13 @@ import { useStore } from "../store/StoreProvider";
 const useSecurityCoefficient = () => {
 	const { state } = useStore();
 
+	// Константа для уровня звука в помещении
+	const ROOM_NOISE_LEVEL = useMemo(() => {
+		return state?.securityData?.insideNoise || 0;
+	}, [state]);
+
+	console.log(ROOM_NOISE_LEVEL, "ROOM_NOISE_LEVEL");
+
 	// Мемоизация данных о стенах для избежания лишних рендеров
 	const walls = useMemo(
 		() => state.roomData.walls || [],
@@ -45,10 +52,6 @@ const useSecurityCoefficient = () => {
 		);
 	}, [materialsData]);
 
-	console.log(windowRw, "windowRw");
-	console.log(doorRw, "doorRw");
-	console.log(wallRw, "wallRw");
-
 	/**
 	 * Расчет эффективной звукоизоляции для стены с учетом окон и дверей.
 	 * @param {Object} wall - Объект стены, содержащий окна и двери.
@@ -70,31 +73,29 @@ const useSecurityCoefficient = () => {
 		const windowInsulation =
 			wall.windows?.reduce((acc, window) => {
 				return acc + (window.s / wallArea) * windowRw;
-			}, 0) || 1;
+			}, 0) || 0;
 
 		// Расчет звукоизоляции дверей
 		const doorInsulation =
 			wall.doors?.reduce((acc, door) => {
 				return acc + (door.s / wallArea) * doorRw;
-			}, 0) || 1;
+			}, 0) || 0;
 
 		// Расчет звукоизоляции стены без учета окон и дверей
 		const wallInsulation = (effectiveWallArea / wallArea) * wallRw;
 
-		console.log(totalWindowArea, "aaa");
+		const totalInsulation = wallInsulation + windowInsulation + doorInsulation;
 
-		const a = wallInsulation + windowInsulation + doorInsulation;
-
-		return parseFloat(a.toFixed(2));
+		return parseFloat(totalInsulation.toFixed(2));
 	};
 
 	const calculateSecurityCoefficient = () => {
 		return walls.map((wall) => {
 			const wallInsulation = calculateEffectiveInsulation(wall); // Эффективная звукоизоляция стены
 			const requiredInsulation =
-				state.securityData.insideNoise - state.securityData.scammerNoise + 1; // Необходимая звукоизоляция (дБ)
+				ROOM_NOISE_LEVEL - state.securityData.scammerNoise; // Необходимая звукоизоляция (дБ)
 			const insulationPercentage = requiredInsulation
-				? (1 - wallInsulation / requiredInsulation) * 100
+				? (wallInsulation / requiredInsulation) * 100
 				: 0; // Процент звукоизоляции относительно требуемой (%)
 
 			return {

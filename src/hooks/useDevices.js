@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useStore } from "../store/StoreProvider";
-import useCoverage from "./useCoverage";
 
 const useDevices = () => {
 	const [devices, setDevices] = useState([]);

@@ -62,6 +62,8 @@ const Devices = ({ addDevice }) => {
 
 	const res = useCoverage();
 
+	console.log(res, "шумы генераторов");
+
 	// wallsKoffSecurDeviceDataUpdate(res);
 
 	useEffect(() => {

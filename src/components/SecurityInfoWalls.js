@@ -69,6 +69,10 @@ export const SecurityInfoWalls = () => {
 		const x1 = state.securityData.insideNoise;
 		const x2 = state.securityData.scammerNoise;
 
+		console.log(x, "x");
+		console.log(x2, "x2");
+		console.log(x1, "x1");
+
 		const res = (1 - (x1 - x2 - x) / (x1 - x2)) * 100;
 
 		return res > 100 ? 100 : res;
@@ -76,12 +80,14 @@ export const SecurityInfoWalls = () => {
 
 	const progressSecurity = useMemo(() => {
 		const data = [];
+		console.log(baseRes, "baseRes");
+		console.log(secRes, "secRes");
 		if (baseRes.length && secRes.length) {
 			for (let i = 0; i < baseRes.length; i++) {
 				data.push({
 					res: checkPercent(
-						parseFloat(baseRes[i].percentProgress) +
-							parseFloat(secRes[i].averageIsolation),
+						parseFloat(secRes[i].totalNoiseLevel.toFixed(2)) +
+							parseFloat(baseRes[i] ? baseRes[i].securityCoefficient : 0),
 					),
 					name: baseRes[i].wallName,
 				});

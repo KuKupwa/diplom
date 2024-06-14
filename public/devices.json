@@ -2,25 +2,28 @@
 	{
 		"id": 1,
 		"type": "sensor",
-		"name": "Тест 1",
-		"cost": 1500,
-		"coverage_area": 200,
-		"k": 10
+		"name": "ЛГШ-501",
+		"cost": 18900,
+		"coverage_area": 400,
+		"k": 10,
+		"source": "https://www.detsys.ru/product/lgsh-501"
 	},
 	{
 		"id": 2,
 		"type": "block",
-		"name": "Тест 2",
-		"cost": 2500,
-		"coverage_area": 150,
-		"k": 20
+		"name": "Покров",
+		"cost": 21900,
+		"coverage_area": 400,
+		"k": 15,
+		"source": "https://www.detsys.ru/product/pokrov"
 	},
 	{
 		"id": 3,
 		"type": "wire",
-		"name": "Тест 3",
-		"cost": 3200,
-		"coverage_area": 100,
-		"k": 30
+		"name": "ЛГШ-503",
+		"cost": 32000,
+		"coverage_area": 400,
+		"k": 20,
+		"source": "https://www.gkshield-security.ru/product/lgsh-503"
 	}
 ]
