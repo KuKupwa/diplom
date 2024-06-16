@@ -4,6 +4,10 @@ import { useDrag } from "react-dnd";
 import { useStore } from "../store/StoreProvider";
 import useCoverage from "../hooks/useCoverage";
 
+import low from "../img/low.svg";
+import medium from "../img/medium.svg";
+import heigh from "../img/high.svg";
+
 const DeviceContainer = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -22,14 +26,15 @@ const DeviceWrapper = styled.div`
 `;
 
 const Device = styled.div`
-	width: 25px;
-	height: 25px;
-	background-color: ${(props) =>
+	width: 40px;
+	height: 40px;
+	background-size: cover;
+	background-image: ${(props) =>
 		props.type === "sensor"
-			? "#ff6347"
+			? `url(${low})`
 			: props.type === "block"
-			? "#4682b4"
-			: "#8a2be2"};
+			? `url(${medium})`
+			: `url(${heigh})`};
 	margin: 10px;
 	cursor: pointer;
 `;

@@ -8,7 +8,10 @@ import { useStore } from "../store/StoreProvider";
 import { useMaterialsGet } from "../hooks/useMaterialsGet";
 import OutputInfo from "./OutputInfo";
 import useCoverage from "../hooks/useCoverage";
-import useSecurityCoefficient from "../hooks/useControlSecurity";
+
+import low from "../img/low.svg";
+import medium from "../img/medium.svg";
+import heigh from "../img/high.svg";
 
 const Button = styled.div`
 	padding: 10px;
@@ -63,14 +66,15 @@ const RoomContent = styled.div`
 
 const Device = styled.div`
 	position: absolute;
-	width: 25px;
-	height: 25px;
-	background-color: ${(props) =>
+	width: 40px;
+	height: 40px;
+	background-size: cover;
+	background-image: ${(props) =>
 		props.type === "sensor"
-			? "#ff6347"
+			? `url(${low})`
 			: props.type === "block"
-			? "#4682b4"
-			: "#8a2be2"};
+			? `url(${medium})`
+			: `url(${heigh})`};
 	cursor: pointer;
 	z-index: 2;
 `;
@@ -146,6 +150,8 @@ const CoverageCircleСCh1 = styled.div`
 	height: 100px;
 	top: 50px;
 	border: 1px white solid;
+	border-color: ${(props) =>
+		props.type === "sensor" ? `blue` : props.type === "block" ? `lime` : `red`};
 	border-radius: 90px;
 	left: 50px;
 	animation: ${rippleEffect} 2s infinite;
@@ -157,6 +163,8 @@ const CoverageCircleСCh2 = styled.div`
 	height: 50px;
 	top: 75px;
 	border: 1px white solid;
+	border-color: ${(props) =>
+		props.type === "sensor" ? `blue` : props.type === "block" ? `lime` : `red`};
 	border-radius: 90px;
 	left: 75px;
 	animation: ${rippleEffect1} 2s infinite;
@@ -478,8 +486,8 @@ const RoomGenerator = () => {
 											top={device.y - device.coverage_area}
 											left={device.x - device.coverage_area}
 										>
-											<CoverageCircleСCh1 />
-											<CoverageCircleСCh2 />
+											<CoverageCircleСCh1 type={device.type} />
+											<CoverageCircleСCh2 type={device.type} />
 										</CoverageCircle>
 									)}
 								</Device>
