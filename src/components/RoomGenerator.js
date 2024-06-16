@@ -201,7 +201,9 @@ const generateRandomRoom = () => {
 	const roomHeight = parseFloat((randomInt(250, 350) / 100).toFixed(2));
 	const roomWidth = parseFloat((width / 100).toFixed(2));
 	const roomLen = parseFloat((height / 100).toFixed(2));
-	const s_room = parseFloat((roomWidth * roomLen).toFixed(2));
+	const realRoomLen = parseFloat((roomLen * 3).toFixed(2));
+	const realRoomWidth = parseFloat((roomWidth * 3).toFixed(2));
+	const s_room = parseFloat((realRoomLen * realRoomWidth).toFixed(2));
 
 	const insideNoise = randomInt(80, 100);
 	const scammerNoise = 60;
@@ -220,7 +222,8 @@ const generateRandomRoom = () => {
 			coord: [0, 0, width, 0, width, 5, 0, 5],
 			length: roomWidth,
 			height: roomHeight,
-			s: parseFloat((roomWidth * roomHeight).toFixed(2)),
+			realW: roomWidth * 3,
+			s: parseFloat((roomWidth * 3 * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "1",
@@ -232,7 +235,8 @@ const generateRandomRoom = () => {
 			coord: [width, 0, width, height, width - 5, height, width - 5, 0],
 			length: roomLen,
 			height: roomHeight,
-			s: parseFloat((roomHeight * roomLen).toFixed(2)),
+			realW: roomLen * 3,
+			s: parseFloat((roomLen * 3 * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "2",
@@ -244,7 +248,8 @@ const generateRandomRoom = () => {
 			coord: [width, height, 0, height, 0, height - 5, width, height - 5],
 			length: roomWidth,
 			height: roomHeight,
-			s: parseFloat((roomWidth * roomHeight).toFixed(2)),
+			realW: roomWidth * 3,
+			s: parseFloat((roomWidth * 3 * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "3",
@@ -256,7 +261,8 @@ const generateRandomRoom = () => {
 			coord: [0, height, 0, 0, 5, 0, 5, height],
 			length: roomLen,
 			height: roomHeight,
-			s: parseFloat((roomLen * roomHeight).toFixed(2)),
+			realW: roomLen * 3,
+			s: parseFloat((roomLen * 3 * roomHeight).toFixed(2)),
 			windows: [],
 			doors: [],
 			name: "4",
@@ -334,6 +340,8 @@ const generateRandomRoom = () => {
 		s_room,
 		insideNoise,
 		scammerNoise,
+		realRoomLen,
+		realRoomWidth,
 	};
 };
 

@@ -71,8 +71,8 @@ const OutputInfo = () => {
 				<>
 					<OutputInfoElement>
 						<h3>Общая информация об комнате</h3>
-						<div>Ширина: {state.roomData.roomWidth} М</div>
-						<div>Длина: {state.roomData.roomLen} М</div>
+						<div>Ширина: {state.roomData.realRoomWidth} М</div>
+						<div>Длина: {state.roomData.realRoomLen} М</div>
 						<div>Высота: {state.roomData.roomHeight} М</div>
 						<div>Площадь: {state.roomData.s_room} М2</div>
 						<div>Макс. уровень шума: {state.roomData.insideNoise} Дб</div>

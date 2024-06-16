@@ -4,7 +4,7 @@
 		"type": "sensor",
 		"name": "ЛГШ-501",
 		"cost": 18900,
-		"coverage_area": 400,
+		"coverage_area": 150,
 		"k": 10,
 		"source": "https://www.detsys.ru/product/lgsh-501"
 	},
@@ -13,7 +13,7 @@
 		"type": "block",
 		"name": "Покров",
 		"cost": 21900,
-		"coverage_area": 400,
+		"coverage_area": 150,
 		"k": 15,
 		"source": "https://www.detsys.ru/product/pokrov"
 	},
@@ -22,7 +22,7 @@
 		"type": "wire",
 		"name": "ЛГШ-503",
 		"cost": 32000,
-		"coverage_area": 400,
+		"coverage_area": 300,
 		"k": 20,
 		"source": "https://www.gkshield-security.ru/product/lgsh-503"
 	}

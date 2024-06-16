@@ -33,8 +33,8 @@ const Window = styled.div`
 	position: absolute;
 	background-color: #87cefa;
 	z-index: 2;
-	width: ${(props) => (props.orientation === "horizontal" ? "100px" : "10px")};
-	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "100px")};
+	width: ${(props) => (props.orientation === "horizontal" ? "50px" : "10px")};
+	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "50px")};
 	top: ${(props) =>
 		props.orientation === "horizontal"
 			? `${props.position[1] - 5}px`
@@ -49,8 +49,8 @@ const Door = styled.div`
 	position: absolute;
 	background-color: #ff6347;
 	z-index: 2;
-	width: ${(props) => (props.orientation === "horizontal" ? "80px" : "10px")};
-	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "80px")};
+	width: ${(props) => (props.orientation === "horizontal" ? "40px" : "10px")};
+	height: ${(props) => (props.orientation === "horizontal" ? "10px" : "40px")};
 	top: ${(props) =>
 		props.orientation === "horizontal"
 			? `${props.position[1] - 5}px`
